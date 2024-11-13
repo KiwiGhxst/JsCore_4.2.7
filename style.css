@@ -1,0 +1,136 @@
+:root {
+    --acent-color: rgba(39, 93, 197, 1);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    background-color: whitesmoke;
+    color: black;
+    width: 100%;
+}
+.wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 20px;
+    & .input__title {
+        font-size: x-large;
+        margin: 20px;
+    }
+    & .input__search {
+        margin: 0;
+        padding: 1rem 2rem;
+        width: 80%;
+        height: 50px;
+        border-radius: 25px;
+        border: 0;
+        &:hover,
+        &:focus,
+        &:active {
+            box-shadow: 0 2px 10px 1px grey;
+        }
+    }
+}
+.input__search::before {
+    content: '';
+    position: absolute;
+    background-color: black;
+    width: 100px;
+    height: 100px;
+}
+
+.autocomplete-list {
+    width: 80%;
+    overflow-y: clip;
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 150px;
+    z-index: 12;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 2px 10px 1px grey;
+}
+.autocomplete-item {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 24px;
+    &:hover {
+        background-color: #f0f0f0;
+    }
+}
+.repo-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+}
+.repo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    padding: 0.375rem 0.75rem;
+    margin: 5px 0;
+    border-radius: 20px;
+    background-color: white;
+}
+.repo-owner {
+    color: var(--acent-color);
+}
+.remove-button {
+    background: indianred;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+    &:hover {
+        background: #fc4445;
+    }
+}
+
+.loader-active {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 12%;
+    animation: rotate 1s linear infinite
+}
+.loader-active::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    top: 50px;
+    inset: 0px;
+    border-radius: 50%;
+    border: 2px solid var(--acent-color);
+    animation: prixClipFix 2s linear infinite ;
+}
+
+@keyframes rotate {
+    100%   {transform: rotate(360deg)}
+}
+
+@keyframes prixClipFix {
+    0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+    25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+    50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+    75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+    100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+}
