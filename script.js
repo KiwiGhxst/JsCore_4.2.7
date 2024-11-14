@@ -1,18 +1,18 @@
-const input = document.getElementsByClassName("input__search")[0];
-const autocompleteList = document.getElementsByClassName("autocomplete-list")[0];
-const repoList = document.getElementsByClassName("repo-list")[0];
-const loader = document.getElementsByClassName("loader")[0];
+const input = document.querySelector('.input__search');
+const autocompleteList = document.querySelector('.autocomplete-list');
+const repoList = document.querySelector('.repo-list');
+const loader = document.querySelector('.loader');
 
 let repos = [];
 
 const fetchRepositories = async (query) => {
     if (!query) {
-        autocompleteList.style.display = "none";
+        autocompleteList.textContent = "";
         return;
     }
     loader.classList.toggle("loader-active");
 
-    const response = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc`);
+    const response = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc&per_page=5`);
     const data = await response.json();
 
     loader.classList.toggle("loader-active");
@@ -20,28 +20,24 @@ const fetchRepositories = async (query) => {
     displayAutocomplete(data.items);
 };
 const displayAutocomplete = (items) => {
-    autocompleteList.innerHTML = "";
+    let arrayDivs = [];
+    autocompleteList.textContent = "";
 
-    if (items.length === 0) {
-        autocompleteList.style.display = "none";
-        return;
+    for(let i = 0; i < items.length; i++) {
+        const div = document.createElement("div");
+        div.textContent = items[i].name;
+        div.classList.add("autocomplete-item");
+        arrayDivs.push(div);
     }
 
-    items.slice(0, 5).forEach((item) => {
-        const div = document.createElement("div");
-        div.textContent = item.name;
-        div.classList.add("autocomplete-item");
-
-        div.onclick = () => {
-            addRepository(item);
+    autocompleteList.addEventListener("click", (event) => {
+        if (event.target.classList.value === 'autocomplete-item') {
+            addRepository(items.find(elem => elem.name === event.target.textContent));
             input.value = "";
-            autocompleteList.style.display = "none";
-        };
-
-        autocompleteList.appendChild(div);
+            autocompleteList.textContent = "";
+        }
     });
-
-    autocompleteList.style.display = "flex";
+    autocompleteList.append(...arrayDivs);
 };
 const addRepository = (repo) => {
     if (!repos.find((r) => r.id === repo.id)) {
@@ -51,23 +47,24 @@ const addRepository = (repo) => {
         renderRepoList();
     }
 };
-const getRepositories = (query) => {
-    if (!query) {
-        autocompleteList.style.display = "none";
-        return;
-    }
-    fetchRepositories(query);
-};
+
 const renderRepoList = () => {
-    repoList.innerHTML = "";
+    repoList.textContent = "";
+
     repos.forEach((repo) => {
-        const repoItemHTML = `
-            <div class="repo-item">
-                <span>${repo.name} by <span class="repo-owner">${repo.owner}</span> ( ⭐ ${repo.stars} )</span>
-                <button class="remove-button" data-id="${repo.id}">Удалить</button>
-            </div>
-        `;
-        repoList.insertAdjacentHTML("beforeend", repoItemHTML);
+        const div = document.createElement("div");
+        const span = document.createElement("span");
+        const btn = document.createElement("button");
+
+        div.classList.add("repo-item");
+        span.textContent = `${repo.name} by ${repo.owner} ( ⭐ ${repo.stars} )`;
+        div.append(span);
+        btn.classList.add("remove-button");
+        btn.dataset.id = repo.id;
+        btn.textContent = 'Удалить';
+        div.appendChild(btn);
+
+        repoList.appendChild(div);
     });
     setupRemoveButtons();
 };
@@ -85,21 +82,17 @@ const removeRepository = (id) => {
     renderRepoList();
 };
 
-input.addEventListener("keydown", (event) => {
+input.addEventListener("input", debounce((event) => {
     if (event.key === " " && input.value.trim() === "") {
         event.preventDefault();
-    }
-});
-
-input.addEventListener("input", debounce((event) => {
-    getRepositories(event.target.value);
+    } else fetchRepositories(event.target.value);
 }, 400));
 
 document.addEventListener("click", (e) => {
     if (!autocompleteList.contains(e.target) && e.target !== input) {
-        autocompleteList.style.display = "none";
+        autocompleteList.textContent = "";
     } else if (e.target === input) {
-        getRepositories(input.value);
+        fetchRepositories(e.target.value);
     }
 });
 
