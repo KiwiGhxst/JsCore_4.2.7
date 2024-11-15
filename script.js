@@ -49,9 +49,10 @@ const addRepository = (repo) => {
 };
 
 const renderRepoList = () => {
+    let repoItems = [];
     repoList.textContent = "";
 
-    repos.forEach((repo) => {
+    for (const repo of repos) {
         const div = document.createElement("div");
         const span = document.createElement("span");
         const btn = document.createElement("button");
@@ -64,8 +65,9 @@ const renderRepoList = () => {
         btn.textContent = 'Удалить';
         div.appendChild(btn);
 
-        repoList.appendChild(div);
-    });
+        repoItems.push(div);
+    }
+    repoList.append(...repoItems);
     setupRemoveButtons();
 };
 const setupRemoveButtons = () => {
